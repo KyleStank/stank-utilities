@@ -14,8 +14,8 @@ namespace StankUtilities.Runtime.Utilities
             Error
         }
 
-        private const string k_PrefixKey = "KS_LogPrefix";
-        private const string k_ColorKey = "KS_LogColor";
+        private const string k_PrefixKey = "StankUtilities_LogPrefix";
+        private const string k_ColorKey = "StankUtilities_LogColor";
 
         private static string s_LogPrefix = "StankUtilities";
         private static Color s_LogColor = new Color(183.0f, 34.0f, 35.0f, 255.0f);
@@ -58,14 +58,18 @@ namespace StankUtilities.Runtime.Utilities
         {
             get
             {
-                // Try to get the current color.
-                string color = PlayerPrefs.GetString(k_ColorKey);
-
-                // Try to convert string to a Color object.
-                Color newColor;
-                if(ColorUtility.TryParseHtmlString(color, out newColor))
+                // If the color has been saved, retrieve it now.
+                if(PlayerPrefs.HasKey(k_ColorKey))
                 {
-                    s_LogColor = newColor;
+                    // Try to get the current color.
+                    string color = PlayerPrefs.GetString(k_ColorKey);
+
+                    // Try to convert string to a Color object.
+                    Color newColor;
+                    if(ColorUtility.TryParseHtmlString(color, out newColor))
+                    {
+                        s_LogColor = newColor;
+                    }
                 }
 
                 return s_LogColor;
