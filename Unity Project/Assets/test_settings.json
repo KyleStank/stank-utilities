@@ -1,0 +1,31 @@
+[
+  {
+    "SettingName": "AudioLevel",
+    "SettingValue": 100.0
+  },
+  {
+    "SettingName": "CanWalk",
+    "SettingValue": true
+  },
+  {
+    "SettingName": "MoveSpeed",
+    "SettingValue": 100
+  },
+  {
+    "SettingName": "Mods",
+    "SettingValue": [
+      {
+        "ModName": "More Grass",
+        "ModID": 1
+      },
+      {
+        "ModName": "Better Combat",
+        "ModID": 2
+      },
+      {
+        "ModName": "Hot Females",
+        "ModID": 3
+      }
+    ]
+  }
+]
