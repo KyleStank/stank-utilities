@@ -20,13 +20,6 @@ namespace StankUtilities.Runtime.Data
         {
             // Set the file path.
             FilePath = filePath;
-
-            // Try to load settings.
-            if(!Load())
-            {
-                // Add default settings.
-                OnInitialSetup();
-            }
         }
 
         #endregion
@@ -65,9 +58,9 @@ namespace StankUtilities.Runtime.Data
         /// <summary>
         /// Saves all of the settings!
         /// </summary>
-        public void Save(Formatting formatting = Formatting.None)
+        public void Save()
         {
-            // If settings list is somehow null, create a new instance of it.
+            // If settings list is somehow null, create a new instance.
             if(SettingsData == null)
             {
                 SettingsData = new List<Setting>();
@@ -78,23 +71,9 @@ namespace StankUtilities.Runtime.Data
             {
                 return;
             }
-            
-            // Loop through all settings.
-            for(int i = 0; i < SettingsData.Count; i++)
-            {
-                // Serialize JSON directly to a file.
-                using(StreamWriter file = File.CreateText(FilePath))
-                {
-                    // Create serializer object.
-                    JsonSerializer serializer = new JsonSerializer();
 
-                    // Set the formatting.
-                    serializer.Formatting = formatting;
-
-                    // Serialize to the save file!
-                    serializer.Serialize(file, SettingsData);
-                }
-            }
+            // Serialize JSON directly to a file.
+            File.WriteAllText(FilePath, JsonConvert.SerializeObject(SettingsData));
 
             // Invoke abstract method.
             OnSave();
@@ -157,6 +136,25 @@ namespace StankUtilities.Runtime.Data
 
             // Return default value if no setting was found.
             return default;
+        }
+
+        /// <summary>
+        /// Sets a specific settings to a value.
+        /// </summary>
+        /// <typeparam name="T">Object Type to set setting value.</typeparam>
+        /// <param name="settingName">Setting to set.</param>
+        /// <param name="settingValue">Value to set.</param>
+        public void SetSetting<T>(string settingName, object settingValue)
+        {
+            // Loop through all of the settings.
+            for(int i = 0; i < SettingsData.Count; i++)
+            {
+                // If there is a settings match, update the setting's value!
+                if(SettingsData[i].SettingName.ToLower() == settingName.ToLower())
+                {
+                    SettingsData[i].SettingValue = (T)settingValue;
+                }
+            }
         }
 
         #endregion

@@ -90,7 +90,7 @@ namespace StankUtilities.Runtime.Data
             SettingsData.Add(new Setting("MoveSpeed", MoveSpeed));
             SettingsData.Add(new Setting(k_ModsListKey, Mods));
 
-            Save(Newtonsoft.Json.Formatting.Indented);
+            Save();
         }
 
         #endregion
