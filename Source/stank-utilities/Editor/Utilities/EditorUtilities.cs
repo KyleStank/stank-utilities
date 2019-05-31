@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿#if EDITOR
 
 using System.Collections.Generic;
 
