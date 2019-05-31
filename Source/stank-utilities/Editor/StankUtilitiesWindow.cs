@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+
+using UnityEngine;
 using UnityEditor;
 
 using StankUtilities.Runtime.Utilities;
@@ -50,3 +52,5 @@ namespace StankUtilities.Editor
         }
     }
 }
+
+#endif
