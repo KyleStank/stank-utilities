@@ -18,6 +18,12 @@ namespace StankUtilities.Runtime.Data
         /// <param name="filePath">Path at which the settings will be saved and loaded.</param>
         protected BaseSettings(string filePath)
         {
+            // If the file path is empty, do not proceed.
+            if(string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
             // Set the file path.
             FilePath = filePath;
         }
