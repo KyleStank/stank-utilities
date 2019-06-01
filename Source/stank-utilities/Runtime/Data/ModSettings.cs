@@ -71,10 +71,12 @@ namespace StankUtilities.Runtime.Data
         public override void OnInitialSetup()
         {
             // Create initial list of mods.
-            Mods = new List<Mod>();
-            Mods.Add(new Mod("More Grass", 1));
-            Mods.Add(new Mod("Better Combat", 2));
-            Mods.Add(new Mod("Hot Females", 3));
+            Mods = new List<Mod>
+            {
+                new Mod("More Grass", 1),
+                new Mod("Better Combat", 2),
+                new Mod("Hot Females", 3)
+            };
 
             // Create inital audio level.
             AudioLevel = 100.0f;
