@@ -70,6 +70,7 @@
     <Compile Include="Runtime\Utilities\FPSDisplay.cs" />
     <Compile Include="Runtime\Utilities\GizmosUtilities.cs" />
     <Compile Include="Runtime\Utilities\IOUtility.cs" />
+    <Compile Include="Runtime\Utilities\JSONUtility.cs" />
     <Compile Include="Runtime\Utilities\MathUtility.cs" />
     <Compile Include="Runtime\Utilities\ReflectionUtility.cs" />
     <Compile Include="Runtime\Utilities\ResourceUtility.cs" />

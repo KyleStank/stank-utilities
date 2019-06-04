@@ -92,14 +92,14 @@ namespace StankUtilities.Runtime.Utilities
             // Check to make sure the ZIP archive exists.
             if(!File.Exists(path))
             {
-                DebuggerUtility.LogError("Couldn't create a Texture from a ZIP archive because the provided ZIP file doesn't exist!");
+                DebuggerUtility.LogError("Couldn't open ZIP archive because the provided file doesn't exist!");
                 return;
             }
 
             // Check to make sure the file is a ZIP archive.
             if(!IsZipFile(path))
             {
-                DebuggerUtility.LogError("Couldn't create a Texture from a ZIP archive because the provided file is not a ZIP archive!");
+                DebuggerUtility.LogError("Couldn't open ZIP archive because the provided file is not a ZIP archive!");
                 return;
             }
 

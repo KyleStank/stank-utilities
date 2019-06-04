@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-using Newtonsoft.Json;
+using StankUtilities.Runtime.Utilities;
 
 namespace StankUtilities.Runtime.Data
 {
@@ -79,7 +79,7 @@ namespace StankUtilities.Runtime.Data
             }
 
             // Serialize JSON directly to a file.
-            File.WriteAllText(FilePath, JsonConvert.SerializeObject(SettingsData));
+            File.WriteAllText(FilePath, JSONUtility.SerializeObject(SettingsData));
 
             // Invoke abstract method.
             OnSave();
@@ -106,7 +106,7 @@ namespace StankUtilities.Runtime.Data
             SettingsData.Clear();
 
             // Load the settings from the file!
-            SettingsData = JsonConvert.DeserializeObject<List<Setting>>(File.ReadAllText(FilePath));
+            SettingsData = JSONUtility.DeserializeObject<List<Setting>>(File.ReadAllText(FilePath));
 
             // Invoke abstract method.
             OnLoad();
@@ -135,7 +135,7 @@ namespace StankUtilities.Runtime.Data
                     }
                     else // Else, convert the setting value into an object type that we need before returning it.
                     {
-                        return JsonConvert.DeserializeObject<T>(SettingsData[i].SettingValue.ToString());
+                        return JSONUtility.DeserializeObject<T>(SettingsData[i].SettingValue.ToString());
                     }
                 }
             }
