@@ -7,11 +7,25 @@ namespace StankUtilities.Runtime.Utilities
     /// </summary>
     public static class DebuggerUtility
     {
+        /// <summary>
+        /// Defines the format that a log will be outputted.
+        /// </summary>
         public enum LogFormat
         {
-            Log,
-            Warning,
-            Error
+            /// <summary>
+            /// Normal log format. Useful for displaying general information.
+            /// </summary>
+            Log = 0,
+
+            /// <summary>
+            /// Warning log format. Useful for displaying information that could lead to issues.
+            /// </summary>
+            Warning = 1,
+
+            /// <summary>
+            /// Error log format. Useful for displaying information that will eventually or already has broken something.
+            /// </summary>
+            Error = 2
         }
 
         private const string k_PrefixKey = "StankUtilities_LogPrefix";
@@ -65,8 +79,7 @@ namespace StankUtilities.Runtime.Utilities
                     string color = PlayerPrefs.GetString(k_ColorKey);
 
                     // Try to convert string to a Color object.
-                    Color newColor;
-                    if(ColorUtility.TryParseHtmlString(color, out newColor))
+                    if(ColorUtility.TryParseHtmlString(color, out Color newColor))
                     {
                         s_LogColor = newColor;
                     }

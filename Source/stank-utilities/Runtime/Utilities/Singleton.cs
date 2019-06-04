@@ -29,8 +29,10 @@ namespace StankUtilities.Runtime.Utilities
                     if(s_Instance == null)
                     {
                         // Create the game object.
-                        GameObject obj = new GameObject();
-                        obj.name = typeof(T).Name;
+                        GameObject obj = new GameObject
+                        {
+                            name = typeof(T).Name
+                        };
 
                         // Add this type to the object.
                         s_Instance = obj.AddComponent<T>();
@@ -45,6 +47,9 @@ namespace StankUtilities.Runtime.Utilities
 
         #region Unity Methods
 
+        /// <summary>
+        /// Invoked when the GameObject is awakened.
+        /// </summary>
         protected virtual void Awake()
         {
             // If the instance is null, create and/or retrieve it.

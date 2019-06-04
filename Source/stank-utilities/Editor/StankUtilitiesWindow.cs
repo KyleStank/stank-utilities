@@ -7,9 +7,14 @@ using StankUtilities.Runtime.Utilities;
 
 namespace StankUtilities.Editor
 {
+    /// <summary>
+    /// Editor class that shows the dashboard window for StankUtilities in the Unity Editor.
+    /// </summary>
     public class StankUtilitiesWindow : EditorWindow
     {
-        // Add menu item named "StankUtilities" to the Window menu
+        /// <summary>
+        /// Displays the window in the Unity Editor.
+        /// </summary>
         [MenuItem("Tools/StankUtilities")]
         public static void ShowWindow()
         {

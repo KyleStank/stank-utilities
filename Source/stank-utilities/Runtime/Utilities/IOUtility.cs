@@ -4,7 +4,7 @@ using System.IO.Compression;
 namespace StankUtilities.Runtime.Utilities
 {
     /// <summary>
-    /// Useful class that handles IO (input & output) operations.
+    /// Useful class that handles IO (input and output) operations.
     /// </summary>
     public static class IOUtility
     {
@@ -35,6 +35,51 @@ namespace StankUtilities.Runtime.Utilities
         public static bool IsZipFile(string file)
         {
             return IsFileExtension(file, ".zip");
+        }
+
+        /// <summary>
+        /// Copies a directory to another location.
+        /// 
+        /// Source: https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+        /// </summary>
+        /// <param name="sourceDirName">Source directory to copy.</param>
+        /// <param name="destDirName">Destination to copy source to.</param>
+        /// <param name="copySubDirs">Should sub-directories be copied?</param>
+        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo directory = new DirectoryInfo(sourceDirName);
+
+            if(!directory.Exists)
+            {
+                DebuggerUtility.LogError("Couldn't copy directory because the source directory does not exist!");
+                return;
+            }
+
+            // If the destination directory doesn't exist, create it.
+            if(!Directory.Exists(destDirName))
+            {
+                Directory.CreateDirectory(destDirName);
+            }
+
+            // Get the files in the directory and copy them to the new location.
+            FileInfo[] files = directory.GetFiles();
+            for(int i = 0; i < files.Length; i++)
+            {
+                string path = Path.Combine(destDirName, files[i].Name);
+                files[i].CopyTo(path, true);
+            }
+
+            // If copying sub-directories, copy them and their contents to new location.
+            if(copySubDirs)
+            {
+                DirectoryInfo[] subDirectories = directory.GetDirectories();
+                for(int i = 0; i < subDirectories.Length; i++)
+                {
+                    string path = Path.Combine(destDirName, subDirectories[i].Name);
+                    DirectoryCopy(subDirectories[i].FullName, path, copySubDirs);
+                }
+            }
         }
 
         /// <summary>
@@ -121,6 +166,16 @@ namespace StankUtilities.Runtime.Utilities
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Extracts a ZIP archive to a directory.
+        /// </summary>
+        /// <param name="path">Path of ZIP archive to extract.</param>
+        /// <param name="destination">Destination of directory to extract ZIP archive to.</param>
+        public static void ExtractZIPArchive(string path, string destination)
+        {
+            ZipFile.ExtractToDirectory(path, destination);
         }
     }
 }

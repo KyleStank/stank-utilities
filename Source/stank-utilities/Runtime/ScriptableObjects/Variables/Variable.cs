@@ -10,12 +10,14 @@ namespace StankUtilities.Runtime.ScriptableObjects.Variables
     /// <typeparam name="T">The type.</typeparam>
     public abstract class Variable<T> : ScriptableObject, ISerializationCallbackReceiver
     {
-        public T InitialValue;
-        public string SaveName = "";
-
         private T m_RuntimeValue;
 
         #region Properties
+
+        /// <summary>
+        /// The initial value of the variable before runtime.
+        /// </summary>
+        public T InitialValue { get; set; }
 
         /// <summary>
         /// The runtime/current value of the variable. Gets reset when game is started and exited. Any changes DO NOT carry over to the inspector.
@@ -48,6 +50,9 @@ namespace StankUtilities.Runtime.ScriptableObjects.Variables
             RuntimeValue = InitialValue;
         }
 
+        /// <summary>
+        /// Does nothing at the moment.
+        /// </summary>
         public void OnBeforeSerialize() { }
 
         #endregion
@@ -71,7 +76,7 @@ namespace StankUtilities.Runtime.ScriptableObjects.Variables
         {
             if(variable == null)
             {
-                return default(T);
+                return default;
             }
 
             return variable.RuntimeValue;
