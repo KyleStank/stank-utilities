@@ -67,6 +67,13 @@ namespace StankUtilities.Runtime.Utilities
             for(int i = 0; i < files.Length; i++)
             {
                 string path = Path.Combine(destDirName, files[i].Name);
+
+                // If file is a Unity .meta file, ignore it.
+                if(IsFileExtension(path, ".meta"))
+                {
+                    continue;
+                }
+
                 files[i].CopyTo(path, true);
             }
 
