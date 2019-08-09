@@ -10,24 +10,29 @@ namespace StankUtilities.Runtime.ScriptableObjects.Variables
     /// <typeparam name="T">The type.</typeparam>
     public abstract class Variable<T> : ScriptableObject, ISerializationCallbackReceiver
     {
-        private T m_RuntimeValue;
+        [SerializeField]
+        private T m_InitialValue = default;
+        [SerializeField]
+        private T m_RuntimeValue = default;
 
         #region Properties
 
         /// <summary>
         /// The initial value of the variable before runtime.
         /// </summary>
-        public T InitialValue { get; set; }
+        public T InitialValue
+        {
+            get { return m_InitialValue; }
+
+            set { m_InitialValue = value; }
+        }
 
         /// <summary>
         /// The runtime/current value of the variable. Gets reset when game is started and exited. Any changes DO NOT carry over to the inspector.
         /// </summary>
         public T RuntimeValue
         {
-            get
-            {
-                return m_RuntimeValue;
-            }
+            get { return m_RuntimeValue; }
 
             set
             {
