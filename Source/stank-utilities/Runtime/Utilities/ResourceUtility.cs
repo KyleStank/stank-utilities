@@ -127,5 +127,23 @@ namespace StankUtilities.Runtime.Utilities
 
             return texture;
         }
+
+        /// <summary>
+        /// Captures a screenshot of the screenshot.
+        /// </summary>
+        /// <param name="width">Width of the screenshot image.</param>
+        /// <param name="height">Height of the screenshot image.</param>
+        /// <returns></returns>
+        public static Texture2D CaptureScreenshot(int width, int height)
+        {
+            // Create a 2D texture with the supplied width and height.
+            Texture2D screenshot = new Texture2D(width, height);
+
+            // Takes the screenshot from top left hand corner of screen and maps to top left hand corner of screenshot texture.
+            screenshot.ReadPixels(
+                new Rect(0, 0, Screen.width, (Screen.width / width) * height), 0, 0);
+
+            return screenshot;
+        }
     }
 }

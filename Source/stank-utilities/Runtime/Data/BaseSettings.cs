@@ -52,7 +52,7 @@ namespace StankUtilities.Runtime.Data
         public abstract void OnInitialSetup();
 
         /// <summary>
-        /// Invoked whe the settings are saved.
+        /// Invoked when the settings are saved.
         /// </summary>
         public abstract void OnSave();
 
