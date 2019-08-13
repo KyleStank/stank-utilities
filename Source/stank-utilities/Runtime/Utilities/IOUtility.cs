@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace StankUtilities.Runtime.Utilities
 {
@@ -132,6 +133,28 @@ namespace StankUtilities.Runtime.Utilities
             }
 
             return bytes;
+        }
+
+        /// <summary>
+        /// Converts an object into an array of bytes.
+        /// </summary>
+        /// <param name="obj">Object to convert.</param>
+        /// <returns>Returns an array of byte[] that was converted from an object.</returns>
+        public static byte[] GetByteArrayFromObject(object obj)
+        {
+            byte[] byteArray = null;
+
+            // Create a memory stream.
+            using(MemoryStream memoryStream = new MemoryStream())
+            {
+                // Serialize the data into binary.
+                new BinaryFormatter().Serialize(memoryStream, obj);
+                
+                // Convert the stream into an array of bytes.
+                byteArray = memoryStream.ToArray();
+            }
+
+            return byteArray;
         }
 
         /// <summary>
