@@ -43,6 +43,14 @@ namespace StankUtilities.Runtime.Utilities
             }
         }
 
+        /// <summary>
+        /// Returns true if the instance is spawned. Returns false otherwise.
+        /// </summary>
+        public static bool IsSpawned
+        {
+            get { return s_Instance != null; }
+        }
+
         #endregion
 
         #region Unity Methods
@@ -55,7 +63,11 @@ namespace StankUtilities.Runtime.Utilities
             // If the instance is null, create and/or retrieve it.
             if(s_Instance == null)
             {
+                // Set the instance.
                 s_Instance = this as T;
+
+                // Set the game object to NOT get destroyed on a scene loader.
+                DontDestroyOnLoad(s_Instance);
             }
             else // If there is already an instance in the scene, destroy this one.
             {
