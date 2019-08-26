@@ -41,6 +41,8 @@ namespace StankUtilities.Runtime.Utilities
 
                 return s_Instance;
             }
+
+            protected set { s_Instance = value; }
         }
 
         /// <summary>
