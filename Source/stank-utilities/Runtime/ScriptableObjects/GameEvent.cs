@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using StankUtilities.Runtime.Events;
+
 namespace StankUtilities.Runtime.ScriptableObjects
 {
     /// <summary>
@@ -24,6 +26,18 @@ namespace StankUtilities.Runtime.ScriptableObjects
             get { return m_EventName; }
 
             private set { m_EventName = value; }
+        }
+
+        #endregion
+
+        #region Unity Methods
+
+        /// <summary>
+        /// Executes the game event.
+        /// </summary>
+        public void ExecuteEvent()
+        {
+            EventSystem.ExecuteEvent(this);
         }
 
         #endregion
