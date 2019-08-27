@@ -64,6 +64,7 @@
     <Compile Include="Runtime\Data\Setting.cs" />
     <Compile Include="Runtime\Events\EventSystem.cs" />
     <Compile Include="Runtime\Events\InvokableAction.cs" />
+    <Compile Include="Runtime\ScriptableObjects\GameEvent.cs" />
     <Compile Include="Runtime\ScriptableObjects\Variables\INumericalVariable.cs" />
     <Compile Include="Runtime\ScriptableObjects\Variables\Variable.cs" />
     <Compile Include="Runtime\Utilities\AssetUtility.cs" />

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using UnityEngine.Events;
-
+using StankUtilities.Runtime.ScriptableObjects;
 using StankUtilities.Runtime.Utilities;
 
 namespace StankUtilities.Runtime.Events
@@ -37,6 +36,25 @@ namespace StankUtilities.Runtime.Events
         }
 
         /// <summary>
+        /// Registers a global event with no parameters.
+        /// </summary>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to invoke when the event is executed.</param>
+        public static void RegisterEvent(GameEvent gameEvent, Action action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't register event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Register the event!
+            RegisterEvent(gameEvent.EventName, action);
+        }
+
+        /// <summary>
         /// Registers an object event with no parameters.
         /// </summary>
         /// <param name="obj">The target object.</param>
@@ -52,6 +70,26 @@ namespace StankUtilities.Runtime.Events
 
             // Register the event!
             RegisterEvent(obj, eventName, invokableAction);
+        }
+
+        /// <summary>
+        /// Registers an object event with no parameters.
+        /// </summary>
+        /// <param name="obj">The target object.</param>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to invoke when the event is executed.</param>
+        public static void RegisterEvent(object obj, GameEvent gameEvent, Action action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't register event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Register the event!
+            RegisterEvent(obj, gameEvent.EventName, action);
         }
 
         /// <summary>
@@ -73,6 +111,26 @@ namespace StankUtilities.Runtime.Events
         }
 
         /// <summary>
+        /// Registers a global event with one parameter.
+        /// </summary>
+        /// <typeparam name="T1">The object type of the parameter.</typeparam>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to invoke when the event is executed.</param>
+        public static void RegisterEvent<T1>(GameEvent gameEvent, Action<T1> action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't register event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Register the event!
+            RegisterEvent(gameEvent.EventName, action);
+        }
+
+        /// <summary>
         /// Registers an object event with one parameter.
         /// </summary>
         /// <typeparam name="T1">The object type of the parameter.</typeparam>
@@ -89,6 +147,27 @@ namespace StankUtilities.Runtime.Events
 
             // Register the event!
             RegisterEvent(obj, eventName, invokableAction);
+        }
+
+        /// <summary>
+        /// Registers an object event with one parameter.
+        /// </summary>
+        /// <typeparam name="T1">The object type of the parameter.</typeparam>
+        /// <param name="obj">The target object.</param>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to invoke when the event is executed.</param>
+        public static void RegisterEvent<T1>(object obj, GameEvent gameEvent, Action<T1> action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't register event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Register the event!
+            RegisterEvent(obj, gameEvent.EventName, action);
         }
 
         #endregion
@@ -119,6 +198,24 @@ namespace StankUtilities.Runtime.Events
         }
 
         /// <summary>
+        /// Executes a global event with no parameters.
+        /// </summary>
+        /// <param name="gameEvent">Game event.</param>
+        public static void ExecuteEvent(GameEvent gameEvent)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't execute event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Execute the event!
+            ExecuteEvent(gameEvent.EventName);
+        }
+
+        /// <summary>
         /// Executes an object event with no parameters.
         /// </summary>
         /// <param name="obj">The target object.</param>
@@ -140,6 +237,25 @@ namespace StankUtilities.Runtime.Events
                 // Invoke the current action.
                 (actions[i] as InvokableAction).Invoke();
             }
+        }
+
+        /// <summary>
+        /// Executes an object event with no parameters.
+        /// </summary>
+        /// <param name="obj">The target object.</param>
+        /// <param name="gameEvent">Game event.</param>
+        public static void ExecuteEvent(object obj, GameEvent gameEvent)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't execute event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Execute the event!
+            ExecuteEvent(obj, gameEvent.EventName);
         }
 
         /// <summary>
@@ -168,6 +284,26 @@ namespace StankUtilities.Runtime.Events
         }
 
         /// <summary>
+        /// Executes a global event with one parameter.
+        /// </summary>
+        /// <typeparam name="T1">The object type of the parameter.</typeparam>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="arg1">The parameter.</param>
+        public static void ExecuteEvent<T1>(GameEvent gameEvent, T1 arg1)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't execute event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Execute the event!
+            ExecuteEvent(gameEvent.EventName, arg1);
+        }
+
+        /// <summary>
         /// Executes an object event with one parameter.
         /// </summary>
         /// <typeparam name="T1">The object type of the parameter.</typeparam>
@@ -191,6 +327,27 @@ namespace StankUtilities.Runtime.Events
                 // Invoke the current action.
                 (actions[i] as InvokableAction<T1>).Invoke(arg1);
             }
+        }
+
+        /// <summary>
+        /// Executes an object event with one parameter.
+        /// </summary>
+        /// <typeparam name="T1">The object type of the parameter.</typeparam>
+        /// <param name="obj">The target object.</param>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="arg1">The parameter.</param>
+        public static void ExecuteEvent<T1>(object obj, GameEvent gameEvent, T1 arg1)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't execute event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Execute the event!
+            ExecuteEvent(obj, gameEvent.EventName, arg1);
         }
 
         #endregion
@@ -239,6 +396,25 @@ namespace StankUtilities.Runtime.Events
         }
 
         /// <summary>
+        /// Unregisters a global event with no parameters.
+        /// </summary>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to remove from event.</param>
+        public static void UnregisterEvent(GameEvent gameEvent, Action action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't unregister event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Unregister the event!
+            UnregisterEvent(gameEvent.EventName, action);
+        }
+
+        /// <summary>
         /// Unregisters an object event with no parameters.
         /// </summary>
         /// <param name="obj">The target object.</param>
@@ -278,6 +454,26 @@ namespace StankUtilities.Runtime.Events
 
             // Removes the event from the object event dictionary, if possible.
             CheckForEventRemoval(obj, eventName, actions);
+        }
+
+        /// <summary>
+        /// Unregisters an object event with no parameters.
+        /// </summary>
+        /// <param name="obj">The target object.</param>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to remove from event.</param>
+        public static void UnregisterEvent(object obj, GameEvent gameEvent, Action action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't unregister event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Unregister the event!
+            UnregisterEvent(obj, gameEvent.EventName, action);
         }
 
         /// <summary>
@@ -323,6 +519,26 @@ namespace StankUtilities.Runtime.Events
         }
 
         /// <summary>
+        /// Unregisters a global event with one parameter.
+        /// </summary>
+        /// <typeparam name="T1">The object type of the parameter.</typeparam>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to remove from event.</param>
+        public static void UnregisterEvent<T1>(GameEvent gameEvent, Action<T1> action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't unregister event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Unregister the event!
+            UnregisterEvent(gameEvent.EventName, action);
+        }
+
+        /// <summary>
         /// Unregisters an object event with one parameter.
         /// </summary>
         /// <typeparam name="T1">The object type of the parameter.</typeparam>
@@ -363,6 +579,27 @@ namespace StankUtilities.Runtime.Events
 
             // Removes the event from the object event dictionary, if possible.
             CheckForEventRemoval(obj, eventName, actions);
+        }
+
+        /// <summary>
+        /// Unregisters an object event with one parameter.
+        /// </summary>
+        /// <typeparam name="T1">The object type of the parameter.</typeparam>
+        /// <param name="obj">The target object.</param>
+        /// <param name="gameEvent">Game event.</param>
+        /// <param name="action">Method to remove from event.</param>
+        public static void UnregisterEvent<T1>(object obj, GameEvent gameEvent, Action<T1> action)
+        {
+            if(gameEvent == null)
+            {
+#if EDITOR
+                DebuggerUtility.LogError("Can't unregister event because the GameEvent provided was null!");
+#endif
+                return;
+            }
+
+            // Unregister the event!
+            UnregisterEvent(obj, gameEvent.EventName, action);
         }
 
         #endregion

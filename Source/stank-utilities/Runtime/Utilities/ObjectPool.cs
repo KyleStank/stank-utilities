@@ -125,6 +125,200 @@ namespace StankUtilities.Runtime.Utilities
         }
 
         /// <summary>
+        /// Return if the object was instantiated with the ObjectPool.
+        /// </summary>
+        /// <param name="instantiatedObject">The GameObject to check to see if it was instantiated with the ObjectPool.</param>
+        /// <returns>True if the object was instantiated with the ObjectPool.</returns>
+        public static bool InstantiatedWithPool(GameObject instantiatedObject)
+        {
+            return Instance.InstantiatedWithPoolInternal(instantiatedObject);
+        }
+
+        /// <summary>
+        /// Internal method to return if the object was instantiated with the ObjectPool.
+        /// </summary>
+        /// <param name="instantiatedObject">The GameObject to check to see if it was instantiated with the ObjectPool.</param>
+        /// <returns>True if the object was instantiated with the ObjectPool.</returns>
+        private bool InstantiatedWithPoolInternal(GameObject instantiatedObject)
+        {
+            return m_InstantiatedGameObjects.ContainsKey(instantiatedObject.GetInstanceID());
+        }
+
+        /// <summary>
+        /// Return the instance ID of the prefab used to spawn the instantiated object.
+        /// </summary>
+        /// <param name="instantiatedObject">The GameObject to get the original instance ID</param>
+        /// <returns>The original instance ID</returns>
+        public static int OriginalInstanceID(GameObject instantiatedObject)
+        {
+            return Instance.OriginalInstanceIDInternal(instantiatedObject);
+        }
+
+        /// <summary>
+        /// Return the specified GameObject back to the ObjectPool.
+        /// </summary>
+        /// <param name="instantiatedObject">The GameObject to return to the pool.</param>
+        public static void Destroy(GameObject instantiatedObject)
+        {
+            // Objects may be wanting to be destroyed as the game is stopping but the ObjectPool has already been destroyed. Ensure the ObjectPool is still valid.
+            if(Instance == null)
+            {
+                return;
+            }
+
+            Instance.DestroyInternal(instantiatedObject);
+        }
+
+        /// <summary>
+        /// Get a pooled object of the specified type using a generic ObjectPool.
+        /// </summary>
+        /// <typeparam name="T">The type of object to get.</typeparam>
+        /// <returns>A pooled object of type T.</returns>
+        public static T Get<T>()
+        {
+            return Instance.GetInternal<T>();
+        }
+
+        /// <summary>
+        /// Return the object back to the generic object pool.
+        /// </summary>
+        /// <typeparam name="T">The type of object to return.</typeparam>
+        /// <param name="obj">The object to return.</param>
+        public static void Return<T>(T obj)
+        {
+            // Objects may be wanting to be returned as the game is stopping but the ObjectPool has already been destroyed. Ensure the ObjectPool is still valid.
+            if(Instance == null)
+            {
+                return;
+            }
+
+            Instance.ReturnInternal<T>(obj);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Internal method to return the instance ID of the prefab used to spawn the instantiated object.
+        /// </summary>
+        /// <param name="instantiatedObject">The GameObject to get the original instance ID</param>
+        /// <returns>The original instance ID</returns>
+        private int OriginalInstanceIDInternal(GameObject instantiatedObject)
+        {
+            var instantiatedInstanceID = instantiatedObject.GetInstanceID();
+            var originalInstanceID = -1;
+            if(!m_InstantiatedGameObjects.TryGetValue(instantiatedInstanceID, out originalInstanceID))
+            {
+                Debug.LogError("Unable to get the original instance ID of " + instantiatedObject + ": has the object already been placed in the ObjectPool?");
+                return -1;
+            }
+            return originalInstanceID;
+        }
+
+        /// <summary>
+        /// Internal method to return the specified GameObject back to the ObjectPool. Call the corresponding server or client method.
+        /// </summary>
+        /// <param name="instantiatedObject">The GameObject to return to the pool.</param>
+        private void DestroyInternal(GameObject instantiatedObject)
+        {
+            var instantiatedInstanceID = instantiatedObject.GetInstanceID();
+            var originalInstanceID = -1;
+            if(!m_InstantiatedGameObjects.TryGetValue(instantiatedInstanceID, out originalInstanceID))
+            {
+                Debug.LogError("Unable to pool " + instantiatedObject.name + " (instance " + instantiatedInstanceID + "): the GameObject was not instantiated with ObjectPool.Instantiate " + Time.time);
+                return;
+            }
+
+            // Map the instantiated instance ID back to the orignal instance ID so the GameObject can be returned to the correct pool.
+            m_InstantiatedGameObjects.Remove(instantiatedInstanceID);
+
+            DestroyLocal(instantiatedObject, originalInstanceID);
+        }
+
+        /// <summary>
+        /// Return the specified GameObject back to the ObjectPool.
+        /// </summary>
+        /// <param name="instantiatedObject">The GameObject to return to the pool.</param>
+        /// <param name="originalInstanceID">The instance ID of the original GameObject.</param>
+        private void DestroyLocal(GameObject instantiatedObject, int originalInstanceID)
+        {
+            // This GameObject may have a collider and that collider may be ignoring the collision with other colliders. Revert this setting because the object is going
+            // back into the pool.
+            // TODO: Remove the comment below.
+            //Collider instantiatedObjectCollider;
+            //if((instantiatedObjectCollider = instantiatedObject.GetCachedComponent<Collider>()) != null)
+            //{
+            //    LayerManager.RevertCollision(instantiatedObjectCollider);
+            //}
+            instantiatedObject.SetActive(false);
+            instantiatedObject.transform.parent = transform;
+
+            Stack<GameObject> pool;
+            if(m_GameObjectPool.TryGetValue(originalInstanceID, out pool))
+            {
+                pool.Push(instantiatedObject);
+            }
+            else
+            {
+                // The pool for this GameObject type doesn't exist yet so it has to be created.
+                pool = new Stack<GameObject>();
+                pool.Push(instantiatedObject);
+                m_GameObjectPool.Add(originalInstanceID, pool);
+            }
+        }
+
+        /// <summary>
+        /// Internal method to return the object back to the generic object pool.
+        /// </summary>
+        /// <typeparam name="T">The type of object to return.</typeparam>
+        /// <param name="obj">The object to return.</param>
+        private void ReturnInternal<T>(T obj)
+        {
+            object value;
+            if(m_GenericPool.TryGetValue(typeof(T), out value))
+            {
+                var pooledObjects = value as Stack<T>;
+                pooledObjects.Push(obj);
+            }
+            else
+            {
+                var pooledObjects = new Stack<T>();
+                pooledObjects.Push(obj);
+                m_GenericPool.Add(typeof(T), pooledObjects);
+            }
+        }
+
+        /// <summary>
+        /// Reset the initialized variable when the scene is no longer loaded.
+        /// </summary>
+        /// <param name="scene">The scene that was unloaded.</param>
+        private void SceneUnloaded(Scene scene)
+        {
+            Instance = null;
+            SceneManager.sceneUnloaded -= SceneUnloaded;
+        }
+
+        /// <summary>
+        /// Internal method to get a pooled object of the specified type using a generic ObjectPool.
+        /// </summary>
+        /// <typeparam name="T">The type of object to get.</typeparam>
+        /// <returns>A pooled object of type T.</returns>
+        private T GetInternal<T>()
+        {
+            object value;
+            if(m_GenericPool.TryGetValue(typeof(T), out value))
+            {
+                var pooledObjects = value as Stack<T>;
+                if(pooledObjects.Count > 0)
+                {
+                    return pooledObjects.Pop();
+                }
+            }
+            return Activator.CreateInstance<T>();
+        }
+
+        /// <summary>
         /// Internal method to spawn a new GameObject. Use the object pool if a previously used GameObject is located in the pool, otherwise instaniate a new GameObject.
         /// </summary>
         /// <param name="original">The original GameObject to pooled a copy of.</param>
@@ -183,200 +377,6 @@ namespace StankUtilities.Runtime.Utilities
                 }
             }
             return null;
-        }
-
-        /// <summary>
-        /// Return if the object was instantiated with the ObjectPool.
-        /// </summary>
-        /// <param name="instantiatedObject">The GameObject to check to see if it was instantiated with the ObjectPool.</param>
-        /// <returns>True if the object was instantiated with the ObjectPool.</returns>
-        public static bool InstantiatedWithPool(GameObject instantiatedObject)
-        {
-            return Instance.InstantiatedWithPoolInternal(instantiatedObject);
-        }
-
-        /// <summary>
-        /// Internal method to return if the object was instantiated with the ObjectPool.
-        /// </summary>
-        /// <param name="instantiatedObject">The GameObject to check to see if it was instantiated with the ObjectPool.</param>
-        /// <returns>True if the object was instantiated with the ObjectPool.</returns>
-        private bool InstantiatedWithPoolInternal(GameObject instantiatedObject)
-        {
-            return m_InstantiatedGameObjects.ContainsKey(instantiatedObject.GetInstanceID());
-        }
-
-        /// <summary>
-        /// Return the instance ID of the prefab used to spawn the instantiated object.
-        /// </summary>
-        /// <param name="instantiatedObject">The GameObject to get the original instance ID</param>
-        /// <returns>The original instance ID</returns>
-        public static int OriginalInstanceID(GameObject instantiatedObject)
-        {
-            return Instance.OriginalInstanceIDInternal(instantiatedObject);
-        }
-
-        /// <summary>
-        /// Internal method to return the instance ID of the prefab used to spawn the instantiated object.
-        /// </summary>
-        /// <param name="instantiatedObject">The GameObject to get the original instance ID</param>
-        /// <returns>The original instance ID</returns>
-        private int OriginalInstanceIDInternal(GameObject instantiatedObject)
-        {
-            var instantiatedInstanceID = instantiatedObject.GetInstanceID();
-            var originalInstanceID = -1;
-            if(!m_InstantiatedGameObjects.TryGetValue(instantiatedInstanceID, out originalInstanceID))
-            {
-                Debug.LogError("Unable to get the original instance ID of " + instantiatedObject + ": has the object already been placed in the ObjectPool?");
-                return -1;
-            }
-            return originalInstanceID;
-        }
-
-        /// <summary>
-        /// Return the specified GameObject back to the ObjectPool.
-        /// </summary>
-        /// <param name="instantiatedObject">The GameObject to return to the pool.</param>
-        public static void Destroy(GameObject instantiatedObject)
-        {
-            // Objects may be wanting to be destroyed as the game is stopping but the ObjectPool has already been destroyed. Ensure the ObjectPool is still valid.
-            if(Instance == null)
-            {
-                return;
-            }
-
-            Instance.DestroyInternal(instantiatedObject);
-        }
-
-        /// <summary>
-        /// Internal method to return the specified GameObject back to the ObjectPool. Call the corresponding server or client method.
-        /// </summary>
-        /// <param name="instantiatedObject">The GameObject to return to the pool.</param>
-        private void DestroyInternal(GameObject instantiatedObject)
-        {
-            var instantiatedInstanceID = instantiatedObject.GetInstanceID();
-            var originalInstanceID = -1;
-            if(!m_InstantiatedGameObjects.TryGetValue(instantiatedInstanceID, out originalInstanceID))
-            {
-                Debug.LogError("Unable to pool " + instantiatedObject.name + " (instance " + instantiatedInstanceID + "): the GameObject was not instantiated with ObjectPool.Instantiate " + Time.time);
-                return;
-            }
-
-            // Map the instantiated instance ID back to the orignal instance ID so the GameObject can be returned to the correct pool.
-            m_InstantiatedGameObjects.Remove(instantiatedInstanceID);
-
-            DestroyLocal(instantiatedObject, originalInstanceID);
-        }
-
-        /// <summary>
-        /// Return the specified GameObject back to the ObjectPool.
-        /// </summary>
-        /// <param name="instantiatedObject">The GameObject to return to the pool.</param>
-        /// <param name="originalInstanceID">The instance ID of the original GameObject.</param>
-        private void DestroyLocal(GameObject instantiatedObject, int originalInstanceID)
-        {
-            // This GameObject may have a collider and that collider may be ignoring the collision with other colliders. Revert this setting because the object is going
-            // back into the pool.
-            // TODO: Remove the comment below.
-            //Collider instantiatedObjectCollider;
-            //if((instantiatedObjectCollider = instantiatedObject.GetCachedComponent<Collider>()) != null)
-            //{
-            //    LayerManager.RevertCollision(instantiatedObjectCollider);
-            //}
-            instantiatedObject.SetActive(false);
-            instantiatedObject.transform.parent = transform;
-
-            Stack<GameObject> pool;
-            if(m_GameObjectPool.TryGetValue(originalInstanceID, out pool))
-            {
-                pool.Push(instantiatedObject);
-            }
-            else
-            {
-                // The pool for this GameObject type doesn't exist yet so it has to be created.
-                pool = new Stack<GameObject>();
-                pool.Push(instantiatedObject);
-                m_GameObjectPool.Add(originalInstanceID, pool);
-            }
-        }
-
-        /// <summary>
-        /// Get a pooled object of the specified type using a generic ObjectPool.
-        /// </summary>
-        /// <typeparam name="T">The type of object to get.</typeparam>
-        /// <returns>A pooled object of type T.</returns>
-        public static T Get<T>()
-        {
-            return Instance.GetInternal<T>();
-        }
-
-        /// <summary>
-        /// Return the object back to the generic object pool.
-        /// </summary>
-        /// <typeparam name="T">The type of object to return.</typeparam>
-        /// <param name="obj">The object to return.</param>
-        public static void Return<T>(T obj)
-        {
-            // Objects may be wanting to be returned as the game is stopping but the ObjectPool has already been destroyed. Ensure the ObjectPool is still valid.
-            if(Instance == null)
-            {
-                return;
-            }
-
-            Instance.ReturnInternal<T>(obj);
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Internal method to return the object back to the generic object pool.
-        /// </summary>
-        /// <typeparam name="T">The type of object to return.</typeparam>
-        /// <param name="obj">The object to return.</param>
-        private void ReturnInternal<T>(T obj)
-        {
-            object value;
-            if(m_GenericPool.TryGetValue(typeof(T), out value))
-            {
-                var pooledObjects = value as Stack<T>;
-                pooledObjects.Push(obj);
-            }
-            else
-            {
-                var pooledObjects = new Stack<T>();
-                pooledObjects.Push(obj);
-                m_GenericPool.Add(typeof(T), pooledObjects);
-            }
-        }
-
-        /// <summary>
-        /// Reset the initialized variable when the scene is no longer loaded.
-        /// </summary>
-        /// <param name="scene">The scene that was unloaded.</param>
-        private void SceneUnloaded(Scene scene)
-        {
-            Instance = null;
-            SceneManager.sceneUnloaded -= SceneUnloaded;
-        }
-
-        /// <summary>
-        /// Internal method to get a pooled object of the specified type using a generic ObjectPool.
-        /// </summary>
-        /// <typeparam name="T">The type of object to get.</typeparam>
-        /// <returns>A pooled object of type T.</returns>
-        private T GetInternal<T>()
-        {
-            object value;
-            if(m_GenericPool.TryGetValue(typeof(T), out value))
-            {
-                var pooledObjects = value as Stack<T>;
-                if(pooledObjects.Count > 0)
-                {
-                    return pooledObjects.Pop();
-                }
-            }
-            return Activator.CreateInstance<T>();
         }
 
         #endregion
