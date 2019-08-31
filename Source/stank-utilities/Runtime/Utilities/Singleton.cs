@@ -9,6 +9,8 @@ namespace StankUtilities.Runtime.Utilities
     public class Singleton<T> : MonoBehaviour where T : Component
     {
         private static T s_Instance = null;
+        private static bool s_IsShuttingDown = false;
+        private static object s_Lock = new object();
 
         #region Properties
 
@@ -19,27 +21,38 @@ namespace StankUtilities.Runtime.Utilities
         {
             get
             {
-                // If the instance is null, try to find it.
-                if(s_Instance == null)
+                // If the application is shutting down, return null.
+                if(s_IsShuttingDown)
                 {
-                    // Search everywhere for the type.
-                    s_Instance = FindObjectOfType<T>();
-
-                    // If we still didn't find it, create one.
-                    if(s_Instance == null)
-                    {
-                        // Create the game object.
-                        GameObject obj = new GameObject
-                        {
-                            name = typeof(T).Name
-                        };
-
-                        // Add this type to the object.
-                        s_Instance = obj.AddComponent<T>();
-                    }
+                    DebuggerUtility.LogWarning("[Singleton] Instance '" + typeof(T) +
+                        "' already destroyed. Returning null.");
+                    return null;
                 }
 
-                return s_Instance;
+                lock(s_Lock)
+                {
+                    // If the instance is null, try to find it.
+                    if(s_Instance == null)
+                    {
+                        // Search everywhere for the type.
+                        s_Instance = FindObjectOfType<T>();
+
+                        // If we still didn't find it, create one.
+                        if(s_Instance == null)
+                        {
+                            // Create the game object.
+                            GameObject obj = new GameObject
+                            {
+                                name = typeof(T).Name
+                            };
+
+                            // Add this type to the object.
+                            s_Instance = obj.AddComponent<T>();
+                        }
+                    }
+
+                    return s_Instance;
+                }
             }
 
             protected set { s_Instance = value; }
@@ -75,6 +88,22 @@ namespace StankUtilities.Runtime.Utilities
             {
                 Destroy(gameObject);
             }
+        }
+
+        /// <summary>
+        /// Invoked when the application starts to quit.
+        /// </summary>
+        protected virtual void OnApplicationQuit()
+        {
+            s_IsShuttingDown = true;
+        }
+
+        /// <summary>
+        /// Invoked when the Singleton is destroyed.
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            s_IsShuttingDown = true;
         }
 
         #endregion
