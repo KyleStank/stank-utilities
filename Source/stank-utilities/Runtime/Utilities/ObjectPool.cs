@@ -75,16 +75,6 @@ namespace StankUtilities.Runtime.Utilities
             }
         }
 
-        private void OnEnable()
-        {
-            SceneManager.sceneUnloaded -= SceneUnloaded;
-        }
-
-        private void OnDisable()
-        {
-            SceneManager.sceneUnloaded += SceneUnloaded;
-        }
-
         #endregion
 
         #region Public Methods
@@ -287,16 +277,6 @@ namespace StankUtilities.Runtime.Utilities
                 pooledObjects.Push(obj);
                 m_GenericPool.Add(typeof(T), pooledObjects);
             }
-        }
-
-        /// <summary>
-        /// Reset the initialized variable when the scene is no longer loaded.
-        /// </summary>
-        /// <param name="scene">The scene that was unloaded.</param>
-        private void SceneUnloaded(Scene scene)
-        {
-            Instance = null;
-            SceneManager.sceneUnloaded -= SceneUnloaded;
         }
 
         /// <summary>
