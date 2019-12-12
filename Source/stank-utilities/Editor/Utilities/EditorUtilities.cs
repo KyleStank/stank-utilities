@@ -34,10 +34,11 @@ namespace StankUtilities.Editor.Utilities
         /// <summary>
         /// Creates a texture that can be used as a background color for any custom editor field, rect, etc.
         /// </summary>
+        /// <param name="color">Color of background.</param>
         /// <returns>Returns a Texture2D that can be used as a background color for any custom editor extension.</returns>
-        public static Texture2D MakeBackgroundTexture()
+        public static Texture2D MakeBackgroundTexture(Color color)
         {
-           return AssetUtility.MakeTexture(Mathf.RoundToInt(EditorGUIUtility.currentViewWidth), 1, SkinColor);
+            return AssetUtility.MakeTexture(Mathf.RoundToInt(EditorGUIUtility.currentViewWidth), 1, color);
         }
 
         /// <summary>
