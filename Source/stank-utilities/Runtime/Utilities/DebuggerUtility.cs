@@ -145,6 +145,7 @@ namespace StankUtilities.Runtime.Utilities
         /// <param name="logFormat">The type of log that we want to print.</param>
         private static void PrettyDebug(object msg, LogFormat logFormat = LogFormat.Log)
         {
+#if EDITOR
             if(logFormat == LogFormat.Warning) // Log a Warning.
             {
                 Debug.LogWarning("<b><color=#" + ColorUtility.ToHtmlStringRGBA(LogColor) + ">[" + LogPrefix + "]</color> " + msg.ToString() + "</b>");
@@ -157,6 +158,7 @@ namespace StankUtilities.Runtime.Utilities
             {
                 Debug.Log("<b><color=#" + ColorUtility.ToHtmlStringRGBA(LogColor) + ">[" + LogPrefix + "]</color> " + msg.ToString() + "</b>");
             }
+#endif
         }
 
         #endregion

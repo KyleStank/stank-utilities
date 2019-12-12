@@ -6,6 +6,7 @@ namespace StankUtilities.Runtime.Utilities
     /// Generic singleton class that converts any MonoBehavior into a singleton.
     /// </summary>
     /// <typeparam name="T">Type that we want to convert to a singleton.</typeparam>
+    [RequireComponent(typeof(PersistOnLoad))]
     public class Singleton<T> : MonoBehaviour where T : Component
     {
         private static T s_Instance = null;
@@ -40,14 +41,17 @@ namespace StankUtilities.Runtime.Utilities
                         // If we still didn't find it, create one.
                         if(s_Instance == null)
                         {
-                            // Create the game object.
-                            GameObject obj = new GameObject
+                            // Create the game object for the Singleton.
+                            GameObject singletonObj = new GameObject
                             {
                                 name = typeof(T).Name
                             };
 
+                            // Attach PersistOnLoad to the Singleton.
+                            singletonObj.AddComponent<PersistOnLoad>();
+
                             // Add this type to the object.
-                            s_Instance = obj.AddComponent<T>();
+                            s_Instance = singletonObj.AddComponent<T>();
                         }
                     }
 
@@ -80,9 +84,6 @@ namespace StankUtilities.Runtime.Utilities
             {
                 // Set the instance.
                 s_Instance = this as T;
-
-                // Set the game object to NOT get destroyed on a scene loader.
-                DontDestroyOnLoad(s_Instance);
             }
             else // If there is already an instance in the scene, destroy this one.
             {

@@ -69,6 +69,7 @@
     <Compile Include="Runtime\ScriptableObjects\Variables\Variable.cs" />
     <Compile Include="Runtime\Utilities\AssetUtility.cs" />
     <Compile Include="Runtime\Utilities\DebuggerUtility.cs" />
+    <Compile Include="Runtime\Utilities\PersistOnLoad.cs" />
     <Compile Include="Runtime\Utilities\FPSDisplay.cs" />
     <Compile Include="Runtime\Utilities\GizmosUtilities.cs" />
     <Compile Include="Runtime\Utilities\IOUtility.cs" />
