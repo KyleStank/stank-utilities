@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Editor\StankUtilitiesWindow.cs" />
+    <Compile Include="Editor\Utilities\EditorLayoutUtility.cs" />
     <Compile Include="Editor\Utilities\EditorUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\Data\BaseSettings.cs" />
