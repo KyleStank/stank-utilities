@@ -6,7 +6,6 @@ namespace StankUtilities.Runtime.Utilities
     /// Generic singleton class that converts any MonoBehavior into a singleton.
     /// </summary>
     /// <typeparam name="T">Type that we want to convert to a singleton.</typeparam>
-    [RequireComponent(typeof(PersistOnLoad))]
     public class Singleton<T> : MonoBehaviour where T : Component
     {
         private static T s_Instance = null;
@@ -95,14 +94,6 @@ namespace StankUtilities.Runtime.Utilities
         /// Invoked when the application starts to quit.
         /// </summary>
         protected virtual void OnApplicationQuit()
-        {
-            s_IsShuttingDown = true;
-        }
-
-        /// <summary>
-        /// Invoked when the Singleton is destroyed.
-        /// </summary>
-        protected virtual void OnDestroy()
         {
             s_IsShuttingDown = true;
         }
