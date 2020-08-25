@@ -91,6 +91,14 @@ namespace StankUtilities.Runtime.Utilities
         }
 
         /// <summary>
+        /// Invoked when the object is destroyed.
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            s_IsShuttingDown = true;
+        }
+
+        /// <summary>
         /// Invoked when the application starts to quit.
         /// </summary>
         protected virtual void OnApplicationQuit()
