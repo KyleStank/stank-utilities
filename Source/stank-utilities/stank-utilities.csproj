@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Editor\Core\CustomInspectorBase.cs" />
+    <Compile Include="Editor\ScriptableObjects\Variables\ReferenceDrawer.cs" />
     <Compile Include="Editor\StankUtilitiesWindow.cs" />
     <Compile Include="Editor\Utilities\EditorLayoutUtility.cs" />
     <Compile Include="Editor\Utilities\EditorUtilities.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Runtime\ScriptableObjects\Variables\FloatReference.cs" />
     <Compile Include="Runtime\ScriptableObjects\Variables\FloatVariable.cs" />
     <Compile Include="Runtime\ScriptableObjects\Variables\INumericalVariable.cs" />
+    <Compile Include="Runtime\ScriptableObjects\Variables\Reference.cs" />
     <Compile Include="Runtime\ScriptableObjects\Variables\Variable.cs" />
     <Compile Include="Runtime\Utilities\AssetUtility.cs" />
     <Compile Include="Runtime\Utilities\DebuggerUtility.cs" />
